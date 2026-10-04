@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ペットの粉薬・錠剤カンタン分割＆飲ませ方サポートメーカー</title>
+    <style>
+        :root {
+            --primary: #FF7675;
+            --primary-dark: #D63031;
+            --secondary: #00B894;
+            --secondary-dark: #00876C;
+            --accent: #FDCB6E;
+            --bg-color: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3436;
+            --text-sub: #636E72;
+            --border-radius: 16px;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .radio-card {
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #FFF;
+        }
+
+        .radio-card input {
+            display: none;
+        }
+
+        .radio-card:hover {
+            border-color: var(--primary);
+        }
+
+        .radio-card input:checked + span {
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        .radio-card.selected {
+            border-color: var(--primary);
+            background: #FFF5F5;
+        }
+
+        select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+            background: #FFF;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(255, 118, 117, 0.4);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* 結果表示エリア */
+        #resultArea {
+            display: none;
+        }
+
+        .result-header {
+            border-bottom: 2px dashed #E2E8F0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-section {
+            margin-bottom: 20px;
+        }
+
+        .result-section h3 {
+            font-size: 1.1rem;
+            color: var(--secondary-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-box {
+            background: #F1F9F6;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .combo-box {
+            background: #FFFDF0;
+            border: 1px solid #FFEAA7;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .combo-title {
+            font-weight: bold;
+            color: #D35400;
+            margin-bottom: 5px;
+        }
+
+        .warning-box {
+            background: #FFF5F5;
+            border: 1px solid #FEB2B2;
+            color: #C53030;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #E2E8F0;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .history-list {
+            margin-top: 30px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #FFF;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            border: 1px solid #E2E8F0;
+        }
+
+        .history-item button {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* SVGアイコン用スタイル */
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,6H13V11H18V13H13V18H11V13H6V11H11V6Z"/></svg>
+                ペットのお薬サポートメーカー
+            </h1>
+            <p>お薬の分割方法と、嫌がらずに飲むためのフードの組み合わせを提案します</p>
+        </header>
+
+        <!-- 入力フォームカード -->
+        <div class="card">
+            <form id="supportForm">
+                <div class="form-group">
+                    <label>1. ペットの種類</label>
+                    <div class="radio-group">
+                        <label class="radio-card selected">
+                            <input type="radio" name="petType" value="dog" checked>
+                            <span>🐶 イヌ</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="petType" value="cat">
+                            <span>🐱 ネコ</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>2. お薬の形状</label>
+                    <div class="radio-group">
+                        <label class="radio-card selected">
+                            <input type="radio" name="medType" value="tablet" checked>
+                            <span>💊 錠剤</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="medType" value="powder">
+                            <span>🥄 粉薬</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="tabletCountGroup">
+                    <label for="splitRatio">3. 分割の目安</label>
+                    <select id="splitRatio">
+                        <option value="1">そのまま（1錠）</option>
+                        <option value="1/2">1/2（半分）に割る</option>
+                        <option value="1/4">1/4（四分の一）に割る</option>
+                        <option value="powderize">粉砕して粉にする</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="petPreference">4. ペットの好みの傾向</label>
+                    <select id="petPreference">
+                        <option value="meat">お肉系の味が好き（匂い強め歓迎）</option>
+                        <option value="fish">お魚・かつお系が好き（ネコに多い）</option>
+                        <option value="dairy">乳製品・ちゅーる系が好き</option>
+                        <option value="dry">カリカリフード（ドライ）派</option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn" id="generateBtn">サポート手順を作成する</button>
+            </form>
+        </div>
+
+        <!-- 結果表示カード -->
+        <div class="card" id="resultArea">
+            <div class="result-header">
+                <h2 id="resultTitle" style="font-size: 1.2rem; color: var(--text-main);">提案結果</h2>
+                <span id="resultSub" style="font-size: 0.85rem; color: var(--text-sub);"></span>
+            </div>
+
+            <div class="result-section">
+                <h3>🛠️ 正確な分割・加工ステップ</h3>
+                <div id="prepSteps"></div>
+            </div>
+
+            <div class="result-section">
+                <h3>🍽️ おすすめの飲ませ方・組み合わせ</h3>
+                <div id="comboSuggestions"></div>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ ご注意：</strong> 
+                苦味の強いお薬や、腸溶性（コーティング）の錠剤は、勝手に砕くと効果が落ちたり苦みで激しく嫌がる原因になります。自己判断せず獣医師や薬剤師にご確認ください。
+            </div>
+        </div>
+
+        <!-- 履歴エリア -->
+        <div class="card" id="historyCard" style="display: none;">
+            <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--text-sub);">履歴から読み込む</h3>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <script>
+        // DOM要素
+        const form = document.getElementById('supportForm');
+        const generateBtn = document.getElementById('generateBtn');
+        const resultArea = document.getElementById('resultArea');
+        const tabletCountGroup = document.getElementById('tabletCountGroup');
+        const historyCard = document.getElementById('historyCard');
+        const historyList = document.getElementById('historyList');
+
+        // ラジオボタンの見た目切り替えアニメーション用
+        document.querySelectorAll('.radio-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const name = this.querySelector('input').name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+                    input.closest('.radio-card').classList.remove('selected');
+                });
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+
+                // 形状が粉薬の場合、分割セレクトを隠す・変更する
+                if(name === 'medType') {
+                    const medType = this.querySelector('input').value;
+                    const splitRatioSelect = document.getElementById('splitRatio');
+                    if(medType === 'powder') {
+                        splitRatioSelect.innerHTML = '<option value="as-is">そのまま（付属スプーン・包み）</option><option value="divide-packet">等分に分包する</option>';
+                    } else {
+                        splitRatioSelect.innerHTML = `
+                            <option value="1">そのまま（1錠）</option>
+                            <option value="1/2">1/2（半分）に割る</option>
+                            <option value="1/4">1/4（四分の一）に割る</option>
+                            <option value="powderize">粉砕して粉にする</option>
+                        `;
+                    }
+                }
+            });
+        });
+
+        // データの保存・読み込み (localStorage)
+        function saveHistory(data) {
+            let history = JSON.parse(localStorage.getItem('pet_med_history') || '[]');
+            // 重複排除して先頭に追加
+            history = history.filter(item => JSON.stringify(item) !== JSON.stringify(data));
+            history.unshift(data);
+            if(history.length > 5) history.pop(); // 最大5件
+            localStorage.setItem('pet_med_history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('pet_med_history') || '[]');
+            if(history.length === 0) {
+                historyCard.style.display = 'none';
+                return;
+            }
+            historyCard.style.display = 'block';
+            historyList.innerHTML = '';
+            history.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                const petText = item.petType === 'dog' ? '🐶 イヌ' : '🐱 ネコ';
+                const medText = item.medType === 'tablet' ? '💊 錠剤' : '🥄 粉薬';
+                div.innerHTML = `
+                    <span>${petText} / ${medText} (${item.splitText})</span>
+                    <button onclick="loadHistoryItem(${index})">呼び出す</button>
+                `;
+                historyList.appendChild(div);
+            });
+        }
+
+        window.loadHistoryItem = function(index) {
+            const history = JSON.parse(localStorage.getItem('pet_med_history') || '[]');
+            const item = history[index];
+            if(!item) return;
+
+            document.querySelector(`input[name="petType"][value="${item.petType}"]`).click();
+            document.querySelector(`input[name="medType"][value="${item.medType}"]`).click();
+            setTimeout(() => {
+                document.getElementById('splitRatio').value = item.splitRatio;
+                document.getElementById('petPreference').value = item.preference;
+                generateBtn.click();
+            }, 50);
+        }
+
+        // ロジック生成メイン
+        generateBtn.addEventListener('click', () => {
+            const petType = document.querySelector('input[name="petType"]:checked').value;
+            const medType = document.querySelector('input[name="medType"]:checked').value;
+            const splitRatio = document.getElementById('splitRatio').value;
+            const splitText = document.getElementById('splitRatio').selectedOptions[0].text;
+            const preference = document.getElementById('petPreference').value;
+
+            // 保存データ作成
+            const currentData = { petType, medType, splitRatio, splitText, preference };
+            saveHistory(currentData);
+
+            // 結果構築
+            const prepStepsEl = document.getElementById('prepSteps');
+            const comboSuggestionsEl = document.getElementById('comboSuggestions');
+            document.getElementById('resultTitle').innerText = `${petType === 'dog' ? 'イヌ' : 'ネコ'}ちゃん向け：お薬サポートプラン`;
+            document.getElementById('resultSub').innerText = `形状: ${medType === 'tablet' ? '錠剤' : '粉薬'} / 加工: ${splitText}`;
+
+            // ステップ生成
+            let stepsHtml = '';
+            if(medType === 'tablet') {
+                if(splitRatio === '1') {
+                    stepsHtml += `<div class="step-box"><b>1. そのまま給与：</b> 錠剤を切らずにそのまま使用します。コーティングを傷つけないよう注意してください。</div>`;
+                } else if(splitRatio === '1/2' || splitRatio === '1/4') {
+                    stepsHtml += `<div class="step-box"><b>1. ピルカッターの使用：</b> 市販のピルカッター、または清潔なカッターナイフを使い、溝に沿って${splitRatio === '1/2' ? '半分' : '四分の一'}へ正確にカットします。</div>`;
+                    stepsHtml += `<div class="step-box"><b>2. 切り口の保護：</b> 残ったお薬は空気に触れないようピルケース等で密閉し、早めに使い切りましょう。</div>`;
+                } else if(splitRatio === 'powderize') {
+                    stepsHtml += `<div class="step-box"><b>1. すり潰し：</b> 専用のピルクラッシャー、またはクッキングシートに挟んでスプーンの背などで細かく粉砕します。</div>`;
+                    stepsHtml += `<div class="step-box"><b>2. 混ざりやすさ確認：</b> 粒感が残らないよう、できるだけ細かな粉状にすることでフードへの偽装が成功しやすくなります。</div>`;
+                }
+            } else {
+                stepsHtml += `<div class="step-box"><b>1. 計量・分包：</b> 1回分が正確に分かれているか確認します。必要に応じてチョイ足し用のウェットフードを用意します。</div>`;
+            }
+            prepStepsEl.innerHTML = stepsHtml;
+
+            // 組み合わせ生成
+            let combosHtml = '';
+            if(preference === 'dairy' || petType === 'cat') {
+                combosHtml += `
+                    <div class="combo-box">
+                        <div class="combo-title">🌟 究極の偽装：液状おやつ（ちゅーる等）包み</div>
+                        <p>スプーン1杯程度の液状おやつにお薬を完全に混ぜ込みます。薬の存在感がかき消されるため、ネコちゃんやグルメなワンちゃんに最適です。</p>
+                    </div>
+                `;
+            }
+            if(preference === 'meat' || petType === 'dog') {
+                combosHtml += `
+                    <div class="combo-box">
+                        <div class="combo-title">🍖 嗜好性抜群：お肉・ササミ団子法</div>
+                        <p>少量のひき肉や柔らかいササミジャーキーでお薬を包み、外側に味がしないようコーティングします。丸飲みさせることで噛まずに飲ませられます。</p>
+                    </div>
+                `;
+            }
+            if(preference === 'dairy') {
+                combosHtml += `
+                    <div class="combo-box">
+                        <div class="combo-title">🧀 芳醇な香り：チーズ・ヨーグルト包み</div>
+                        <p>キリ等の柔らかいプロセスチーズにお薬を埋め込みます。チーズ自体の強い香りで薬の匂いが完全にマスキングされます。</p>
+                    </div>
+                `;
+            }
+            combosHtml += `
+                <div class="combo-box">
+                    <div class="combo-title">🥣 いつものフード＋ひと工夫法</div>
+                    <p>お薬を混ぜたフードを最初に少量だけ与え、ペロリと食べたら残りの美味しいフードをご褒美として与える「サンドイッチ方式」が効果的です。</p>
+                </div>
+            `;
+            comboSuggestionsEl.innerHTML = combosHtml;
+
+            // 表示
+            resultArea.style.display = 'block';
+            resultArea.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // 初期ロード時に履歴があれば描画
+        renderHistory();
+    </script>
+</body>
+</html>
